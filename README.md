@@ -2,7 +2,7 @@
 
 Zadanie rekrutacyjne: trzyetapowy formularz w modalu i tabela produktów z paginacją w URL.
 
-Demo: _link_
+Demo: https://workconnect-product-form-eight.vercel.app/
 
 ## Uruchomienie
 
