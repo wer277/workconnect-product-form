@@ -7,7 +7,7 @@ const requiredSelect = <const T extends readonly [string, ...string[]]>(values: 
 const fromNullable = <T extends z.ZodType<number, number>>(schema: T) => z.number().nullable().pipe(schema);
 
 export const basicInfoSchema = z.object({
-  name: z.string().trim().min(3, 'Nazwa musi mieć co najmniej 3 znaki'),
+  name: z.string().trim().min(1, 'Nazwa jest wymagana').min(3, 'Nazwa musi mieć co najmniej 3 znaki'),
   sku: z
     .string()
     .trim()

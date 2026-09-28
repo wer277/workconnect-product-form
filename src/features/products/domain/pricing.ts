@@ -1,3 +1,5 @@
+export type PriceSource = 'net' | 'gross';
+
 const toMinor = (amount: number) => Math.round((amount + Number.EPSILON) * 100);
 const fromMinor = (minor: number) => minor / 100;
 

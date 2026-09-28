@@ -42,7 +42,10 @@ export function WizardStepper({ currentStep }: { currentStep: WizardStepIndex })
             {index < LAST_STEP && (
               <li
                 aria-hidden
-                className={cn('hidden h-px flex-1 sm:block', index < currentStep ? 'bg-primary' : 'bg-border')}
+                className={cn(
+                  'hidden h-px w-17 shrink-0 sm:block',
+                  index < currentStep ? 'bg-primary/50' : 'bg-border',
+                )}
               />
             )}
           </Fragment>

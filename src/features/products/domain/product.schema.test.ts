@@ -43,6 +43,11 @@ describe('basicInfoSchema', () => {
     expect(issuePaths(result)).toContain(field);
   });
 
+  it.each(['', '   '])('shows the required message first for name = "%s"', (name) => {
+    const result = basicInfoSchema.safeParse({ ...validProduct, name });
+    expect(result.error?.issues[0]?.message).toBe('Nazwa jest wymagana');
+  });
+
   it('accepts sku with exactly 24 characters', () => {
     expect(basicInfoSchema.safeParse({ ...validProduct, sku: 'A1'.repeat(12) }).success).toBe(true);
   });

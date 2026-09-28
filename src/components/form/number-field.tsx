@@ -3,13 +3,15 @@ import { Input } from '@/components/ui/input';
 import { useFieldContext } from './form-context';
 import { FormField } from './form-field';
 
+type NumberMode = 'decimal' | 'integer';
+
 type NumberFieldProps = Omit<
   ComponentProps<typeof Input>,
   'value' | 'onChange' | 'onBlur' | 'id' | 'type' | 'inputMode'
 > & {
   label: string;
   description?: string;
-  mode?: 'decimal' | 'integer';
+  mode?: NumberMode;
 };
 
 const PATTERNS = {
@@ -23,18 +25,26 @@ const parse = (text: string) => {
   return Number.isFinite(value) ? value : null;
 };
 
-const format = (value: number | null) => (value === null ? '' : String(value).replace('.', ','));
+const format = (value: number | null, mode: NumberMode) => {
+  if (value === null) return '';
+  return mode === 'decimal' ? value.toFixed(2).replace('.', ',') : String(value);
+};
 
 export function NumberField({ label, description, mode = 'decimal', ...inputProps }: NumberFieldProps) {
   const field = useFieldContext<number | null>();
-  const [text, setText] = useState(() => format(field.state.value));
+  const [text, setText] = useState(() => format(field.state.value, mode));
 
-  const displayed = parse(text) === field.state.value ? text : format(field.state.value);
+  const displayed = parse(text) === field.state.value ? text : format(field.state.value, mode);
 
   const handleChange = (next: string) => {
     if (!PATTERNS[mode].test(next)) return;
     setText(next);
     field.handleChange(parse(next));
+  };
+
+  const handleBlur = () => {
+    setText(format(field.state.value, mode));
+    field.handleBlur();
   };
 
   return (
@@ -48,7 +58,7 @@ export function NumberField({ label, description, mode = 'decimal', ...inputProp
           name={field.name}
           value={displayed}
           onChange={(event) => handleChange(event.target.value)}
-          onBlur={field.handleBlur}
+          onBlur={handleBlur}
         />
       )}
     </FormField>

@@ -1,20 +1,26 @@
-import { useRef } from 'react';
 import { withForm } from '@/components/form/form-hook';
 import { CURRENCY_OPTIONS, VAT_OPTIONS } from '../../domain/options';
-import { grossFromNet, netFromGross } from '../../domain/pricing';
+import { grossFromNet, netFromGross, type PriceSource } from '../../domain/pricing';
 import { priceSchema } from '../../domain/product.schema';
 import { productFormOptions } from '../product-form-options';
 import { validateAgainstStep } from '../step-validator';
 
-type PriceSource = 'net' | 'gross';
+type PriceStepProps = {
+  lastEditedPrice: PriceSource;
+  onPriceEdited: (source: PriceSource) => void;
+};
+
+const priceStepProps: PriceStepProps = {
+  lastEditedPrice: 'net',
+  onPriceEdited: () => undefined,
+};
 
 const silentUpdate = { dontRunListeners: true, dontUpdateMeta: true } as const;
 
 export const PriceStep = withForm({
   ...productFormOptions,
-  render: function PriceStep({ form }) {
-    const lastEdited = useRef<PriceSource>('net');
-
+  props: priceStepProps,
+  render: function PriceStep({ form, lastEditedPrice, onPriceEdited }) {
     const syncGross = (net: number | null, vatRate: number) =>
       form.setFieldValue('grossPrice', net === null ? null : grossFromNet(net, vatRate), silentUpdate);
 
@@ -28,12 +34,12 @@ export const PriceStep = withForm({
           validators={{ onChange: validateAgainstStep(priceSchema, 'netPrice') }}
           listeners={{
             onChange: ({ value }) => {
-              lastEdited.current = 'net';
+              onPriceEdited('net');
               syncGross(value, form.getFieldValue('vatRate'));
             },
           }}
         >
-          {(field) => <field.NumberField label="Cena netto" placeholder="0.00" />}
+          {(field) => <field.NumberField label="Cena netto" placeholder="0,00" />}
         </form.AppField>
 
         <form.AppField
@@ -41,12 +47,12 @@ export const PriceStep = withForm({
           validators={{ onChange: validateAgainstStep(priceSchema, 'grossPrice') }}
           listeners={{
             onChange: ({ value }) => {
-              lastEdited.current = 'gross';
+              onPriceEdited('gross');
               syncNet(value, form.getFieldValue('vatRate'));
             },
           }}
         >
-          {(field) => <field.NumberField label="Cena brutto" placeholder="0.00" />}
+          {(field) => <field.NumberField label="Cena brutto" placeholder="0,00" />}
         </form.AppField>
 
         <form.AppField
@@ -54,7 +60,7 @@ export const PriceStep = withForm({
           validators={{ onChange: validateAgainstStep(priceSchema, 'vatRate') }}
           listeners={{
             onChange: ({ value }) => {
-              if (lastEdited.current === 'net') syncGross(form.getFieldValue('netPrice'), value);
+              if (lastEditedPrice === 'net') syncGross(form.getFieldValue('netPrice'), value);
               else syncNet(form.getFieldValue('grossPrice'), value);
             },
           }}

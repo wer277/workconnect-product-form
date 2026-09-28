@@ -8,7 +8,8 @@ import { useProductWizard } from './use-product-wizard';
 import { WizardStepper } from './wizard-stepper';
 
 export function ProductWizard({ onComplete }: { onComplete: (product: ProductDraft) => void }) {
-  const { form, formRef, step, isFirstStep, isLastStep, goBack, handleSubmit } = useProductWizard(onComplete);
+  const { form, formRef, step, isFirstStep, isLastStep, lastEditedPrice, setLastEditedPrice, goBack, handleSubmit } =
+    useProductWizard(onComplete);
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex min-h-0 flex-1 flex-col">
@@ -18,7 +19,7 @@ export function ProductWizard({ onComplete }: { onComplete: (product: ProductDra
 
       <div className="flex-1 overflow-y-auto px-4 py-5">
         {step === 0 && <BasicInfoStep form={form} />}
-        {step === 1 && <PriceStep form={form} />}
+        {step === 1 && <PriceStep form={form} lastEditedPrice={lastEditedPrice} onPriceEdited={setLastEditedPrice} />}
         {step === 2 && <AvailabilityStep form={form} />}
       </div>
 

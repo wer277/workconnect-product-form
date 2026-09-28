@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { useAppForm } from '@/components/form/form-hook';
+import type { PriceSource } from '../domain/pricing';
 import { productSchema, type ProductDraft } from '../domain/product.schema';
 import { productFormOptions } from './product-form-options';
 import { LAST_STEP, WIZARD_STEPS, type WizardStepIndex } from './steps.config';
@@ -9,6 +10,7 @@ const previousStep = (step: WizardStepIndex): WizardStepIndex => (step === 2 ? 1
 
 export function useProductWizard(onComplete: (product: ProductDraft) => void) {
   const [step, setStep] = useState<WizardStepIndex>(0);
+  const [lastEditedPrice, setLastEditedPrice] = useState<PriceSource>('net');
   const formRef = useRef<HTMLFormElement>(null);
 
   const form = useAppForm({
@@ -52,6 +54,8 @@ export function useProductWizard(onComplete: (product: ProductDraft) => void) {
     step,
     isFirstStep: step === 0,
     isLastStep: step === LAST_STEP,
+    lastEditedPrice,
+    setLastEditedPrice,
     goBack,
     handleSubmit,
   };
